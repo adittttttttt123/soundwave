@@ -29,8 +29,12 @@ class HomeView extends StatelessWidget {
                 height: 300,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(AppConstants.primaryColorHex).withOpacity(0.15),
-                  filter: const ImageFilter.blur(sigmaX: 100, sigmaY: 100),
+                  gradient: RadialGradient(
+                    colors: [
+                      const Color(AppConstants.primaryColorHex).withOpacity(0.15),
+                      const Color(AppConstants.primaryColorHex).withOpacity(0.0),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -267,7 +271,3 @@ class HomeView extends StatelessWidget {
   }
 }
 
-// Simulated ImageFilter to allow smooth web execution without UI filters exceptions
-class ImageFilter {
-  static blur({double sigmaX = 0, double sigmaY = 0}) => null;
-}

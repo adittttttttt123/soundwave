@@ -14,7 +14,7 @@ class AppTheme {
         background: Color(AppConstants.backgroundColorHex),
         surface: Color(AppConstants.cardBackgroundColorHex),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: const Color(AppConstants.cardBackgroundColorHex),
         elevation: 0,
         shape: RoundedRectangleBorder(
@@ -39,7 +39,7 @@ class AppTheme {
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
           fontSize: 32,
-          fontWeight: FontWeight.extrabold,
+          fontWeight: FontWeight.w800,
           color: Colors.white,
           letterSpacing: -0.5,
         ),
