@@ -442,7 +442,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'SpaceGrotesk'),
             ),
             const SizedBox(height: 8),
-            Text(subtitle, style: const TextStyle(color: Colors.grey), textAlign: Center),
+            Text(subtitle, style: const TextStyle(color: Colors.grey), textAlign: TextAlign.center),
           ],
         ),
       ),
