@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/audio_provider.dart';
-import '../models/track.dart';
+import '../models/song.dart';
 import 'player_view.dart';
 import '../core/constants.dart';
 
@@ -32,10 +32,33 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
     super.dispose();
   }
 
-  String _formatDuration(int seconds) {
-    final minutes = seconds ~/ 60;
-    final remainingSeconds = seconds % 60;
-    return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
+  Widget _buildCoverImage(String coverUrl, double size) {
+    if (coverUrl.startsWith('http')) {
+      return Image.network(
+        coverUrl,
+        fit: BoxFit.cover,
+        height: size,
+        width: size,
+        errorBuilder: (context, error, stackTrace) => _buildPlaceholder(size),
+      );
+    } else {
+      return Image.asset(
+        coverUrl,
+        fit: BoxFit.cover,
+        height: size,
+        width: size,
+        errorBuilder: (context, error, stackTrace) => _buildPlaceholder(size),
+      );
+    }
+  }
+
+  Widget _buildPlaceholder(double size) {
+    return Container(
+      width: size,
+      height: size,
+      color: Colors.grey[900],
+      child: const Icon(Icons.music_note_rounded, color: Colors.white30, size: 24),
+    );
   }
 
   @override
@@ -99,7 +122,6 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
           },
         ),
       ),
-      // Mobile Drawer or Bottom Navigation could be mapped here if needed.
     );
   }
 
@@ -156,7 +178,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
-                      final Track track = audioProvider.queue[index];
+                      final Song track = audioProvider.queue[index];
                       final bool isCurrent = audioProvider.currentTrack?.id == track.id;
 
                       return Container(
@@ -189,20 +211,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                                     ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
-                                      child: Image.network(
-                                        track.coverUrl,
-                                        width: 50,
-                                        height: 50,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (context, error, stackTrace) {
-                                          return Container(
-                                            width: 50,
-                                            height: 50,
-                                            color: Colors.grey[900],
-                                            child: const Icon(Icons.music_note, color: Colors.white30),
-                                          );
-                                        },
-                                      ),
+                                      child: _buildCoverImage(track.coverUrl, 50),
                                     ),
                                   ),
                                   const SizedBox(width: 16),
@@ -243,7 +252,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                                     const Icon(Icons.volume_up, color: Color(AppConstants.secondaryColorHex))
                                   else
                                     Text(
-                                      _formatDuration(track.duration),
+                                      track.duration, // Displays user preformatted "3:54" direct from model
                                       style: TextStyle(
                                         color: Colors.grey[600],
                                         fontSize: 12,
@@ -488,12 +497,7 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
                         // Small artwork cover
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.network(
-                            track.coverUrl,
-                            width: 44,
-                            height: 44,
-                            fit: BoxFit.cover,
-                          ),
+                          child: _buildCoverImage(track.coverUrl, 44),
                         ),
                         const SizedBox(width: 12),
 

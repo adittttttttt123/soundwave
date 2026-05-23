@@ -1,15 +1,176 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import '../models/track.dart';
-import '../core/constants.dart';
+import '../models/song.dart';
 
 enum RepeatMode { off, one, all }
 
 class AudioProvider extends ChangeNotifier {
-  // Track lists
-  final List<Track> _originalQueue = [];
-  List<Track> _activeQueue = [];
+  // Galdive Flagship 20-Song Playlist
+  final List<Song> _originalQueue = [
+    Song(
+      id: '1',
+      title: 'Window',
+      artist: 'Galdive',
+      duration: '3:54',
+      coverUrl: 'assets/images/galdive_spiritual.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
+    ),
+    Song(
+      id: '2',
+      title: 'Lotus',
+      artist: 'Galdive',
+      duration: '3:34',
+      coverUrl: 'assets/images/galdive_lotus.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+    ),
+    Song(
+      id: '3',
+      title: 'Sorrento',
+      artist: 'Galdive',
+      duration: '3:42',
+      coverUrl: 'assets/images/galdive_sorrento.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+    ),
+    Song(
+      id: '4',
+      title: 'Dear',
+      artist: 'Galdive',
+      duration: '3:15',
+      coverUrl: 'assets/images/galdive_dear.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+    ),
+    Song(
+      id: '5',
+      title: 'Blew Me',
+      artist: 'Galdive',
+      duration: '4:02',
+      coverUrl: 'assets/images/galdive_blewme.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+    ),
+    Song(
+      id: '6',
+      title: 'Poetry',
+      artist: 'Galdive',
+      duration: '3:50',
+      coverUrl: 'assets/images/galdive_poetry.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3',
+    ),
+    Song(
+      id: '7',
+      title: 'Nescience',
+      artist: 'Galdive',
+      duration: '3:28',
+      coverUrl: 'assets/images/galdive_nescience.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3',
+    ),
+    Song(
+      id: '8',
+      title: 'Sway',
+      artist: 'Galdive',
+      duration: '3:10',
+      coverUrl: 'assets/images/galdive_sway.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
+    ),
+    Song(
+      id: '9',
+      title: 'Aisles',
+      artist: 'Galdive',
+      duration: '3:55',
+      coverUrl: 'assets/images/galdive_aisles.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3',
+    ),
+    Song(
+      id: '10',
+      title: 'Can Hide',
+      artist: 'Galdive',
+      duration: '3:22',
+      coverUrl: 'assets/images/galdive_canhide.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3',
+    ),
+    Song(
+      id: '11',
+      title: 'Cruisin\'',
+      artist: 'Galdive',
+      duration: '3:40',
+      coverUrl: 'assets/images/galdive_cruisin.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3',
+    ),
+    Song(
+      id: '12',
+      title: 'Coffee',
+      artist: 'Galdive',
+      duration: '3:05',
+      coverUrl: 'assets/images/galdive_coffee.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3',
+    ),
+    Song(
+      id: '13',
+      title: 'Pretentious',
+      artist: 'Galdive',
+      duration: '3:31',
+      coverUrl: 'assets/images/galdive_pretentious.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3',
+    ),
+    Song(
+      id: '14',
+      title: 'Cloud 9',
+      artist: 'Galdive',
+      duration: '4:10',
+      coverUrl: 'assets/images/galdive_cloud9.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3',
+    ),
+    Song(
+      id: '15',
+      title: 'Whisper',
+      artist: 'Galdive',
+      duration: '3:18',
+      coverUrl: 'assets/images/galdive_whisper.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3',
+    ),
+    Song(
+      id: '16',
+      title: 'Stay',
+      artist: 'Galdive',
+      duration: '3:48',
+      coverUrl: 'assets/images/galdive_stay.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3',
+    ),
+    Song(
+      id: '17',
+      title: 'Five',
+      artist: 'Galdive',
+      duration: '3:25',
+      coverUrl: 'assets/images/galdive_five.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+    ),
+    Song(
+      id: '18',
+      title: 'Thrive',
+      artist: 'Galdive',
+      duration: '3:52',
+      coverUrl: 'assets/images/galdive_thrive.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+    ),
+    Song(
+      id: '19',
+      title: 'Gravity',
+      artist: 'Galdive',
+      duration: '4:05',
+      coverUrl: 'assets/images/galdive_gravity.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+    ),
+    Song(
+      id: '20',
+      title: 'Blue',
+      artist: 'Galdive',
+      duration: '3:12',
+      coverUrl: 'assets/images/galdive_blue.png',
+      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+    ),
+  ];
+
+  List<Song> _activeQueue = [];
   
   // Playback state variables
   int _currentIndex = -1;
@@ -22,10 +183,6 @@ class AudioProvider extends ChangeNotifier {
   RepeatMode _repeatMode = RepeatMode.off;
 
   AudioProvider() {
-    // Populate with mock data initially
-    for (var trackData in MockData.mockTracks) {
-      _originalQueue.add(Track.fromJson(trackData));
-    }
     _activeQueue = List.from(_originalQueue);
     if (_activeQueue.isNotEmpty) {
       _currentIndex = 0;
@@ -33,8 +190,8 @@ class AudioProvider extends ChangeNotifier {
   }
 
   // Getters
-  List<Track> get queue => _activeQueue;
-  Track? get currentTrack => (_currentIndex >= 0 && _currentIndex < _activeQueue.length) 
+  List<Song> get queue => _activeQueue;
+  Song? get currentTrack => (_currentIndex >= 0 && _currentIndex < _activeQueue.length) 
       ? _activeQueue[_currentIndex] 
       : null;
   bool get isPlaying => _isPlaying;
@@ -43,9 +200,9 @@ class AudioProvider extends ChangeNotifier {
   RepeatMode get repeatMode => _repeatMode;
 
   double get progressPercentage {
-    final track = currentTrack;
-    if (track == null || track.duration == 0) return 0.0;
-    return _currentPosition / track.duration;
+    final song = currentTrack;
+    if (song == null || song.durationInSeconds == 0) return 0.0;
+    return _currentPosition / song.durationInSeconds;
   }
 
   // Global Controls
@@ -71,10 +228,10 @@ class AudioProvider extends ChangeNotifier {
   }
 
   void seek(int seconds) {
-    final track = currentTrack;
-    if (track == null) return;
+    final song = currentTrack;
+    if (song == null) return;
     
-    _currentPosition = seconds.clamp(0, track.duration);
+    _currentPosition = seconds.clamp(0, song.durationInSeconds);
     notifyListeners();
   }
 
@@ -82,7 +239,7 @@ class AudioProvider extends ChangeNotifier {
     if (_activeQueue.isEmpty) return;
 
     if (_repeatMode == RepeatMode.one) {
-      // Loop current track
+      // Loop current song
       _currentPosition = 0;
       play();
       return;
@@ -110,7 +267,7 @@ class AudioProvider extends ChangeNotifier {
   void previous() {
     if (_activeQueue.isEmpty) return;
 
-    // If more than 3 seconds in, restart track
+    // If more than 3 seconds in, restart song
     if (_currentPosition > 3) {
       _currentPosition = 0;
       notifyListeners();
@@ -127,7 +284,7 @@ class AudioProvider extends ChangeNotifier {
         _currentPosition = 0;
         play();
       } else {
-        // Restart track since it's the first one
+        // Restart song since it's the first one
         _currentPosition = 0;
         notifyListeners();
       }
@@ -135,8 +292,8 @@ class AudioProvider extends ChangeNotifier {
   }
 
   // Queue Management
-  void selectTrack(String trackId) {
-    final index = _activeQueue.indexWhere((track) => track.id == trackId);
+  void selectTrack(String songId) {
+    final index = _activeQueue.indexWhere((song) => song.id == songId);
     if (index != -1) {
       _currentIndex = index;
       _currentPosition = 0;
@@ -146,12 +303,12 @@ class AudioProvider extends ChangeNotifier {
 
   void toggleShuffle() {
     _isShuffle = !_isShuffle;
-    final Track? activeTrack = currentTrack;
+    final Song? activeTrack = currentTrack;
 
     if (_isShuffle) {
       // Shuffle list
       final random = Random();
-      final List<Track> shuffled = List.from(_originalQueue);
+      final List<Song> shuffled = List.from(_originalQueue);
       for (var i = shuffled.length - 1; i > 0; i--) {
         var n = random.nextInt(i + 1);
         var temp = shuffled[i];
@@ -170,7 +327,7 @@ class AudioProvider extends ChangeNotifier {
       // Revert to original order
       _activeQueue = List.from(_originalQueue);
       if (activeTrack != null) {
-        _currentIndex = _activeQueue.indexWhere((track) => track.id == activeTrack.id);
+        _currentIndex = _activeQueue.indexWhere((song) => song.id == activeTrack.id);
       }
     }
     notifyListeners();
@@ -195,10 +352,10 @@ class AudioProvider extends ChangeNotifier {
   void _startTimer() {
     _playbackTimer?.cancel();
     _playbackTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      final track = currentTrack;
-      if (track == null) return;
+      final song = currentTrack;
+      if (song == null) return;
 
-      if (_currentPosition < track.duration) {
+      if (_currentPosition < song.durationInSeconds) {
         _currentPosition++;
         notifyListeners();
       } else {

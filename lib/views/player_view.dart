@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/audio_provider.dart';
 import '../core/constants.dart';
+import '../models/song.dart';
 
 class PlayerView extends StatelessWidget {
   const PlayerView({super.key});
@@ -12,6 +13,35 @@ class PlayerView extends StatelessWidget {
     return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
+  Widget _buildCoverImage(String coverUrl, double size) {
+    if (coverUrl.startsWith('http')) {
+      return Image.network(
+        coverUrl,
+        fit: BoxFit.cover,
+        height: size,
+        width: size,
+        errorBuilder: (context, error, stackTrace) => _buildPlaceholder(size),
+      );
+    } else {
+      return Image.asset(
+        coverUrl,
+        fit: BoxFit.cover,
+        height: size,
+        width: size,
+        errorBuilder: (context, error, stackTrace) => _buildPlaceholder(size),
+      );
+    }
+  }
+
+  Widget _buildPlaceholder(double size) {
+    return Container(
+      width: size,
+      height: size,
+      color: Colors.grey[900],
+      child: const Icon(Icons.music_note_rounded, color: Colors.white30, size: 48),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +50,10 @@ class PlayerView extends StatelessWidget {
           icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 30),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('NOW PLAYING'),
+        title: const Text(
+          'NOW PLAYING',
+          style: TextStyle(fontFamily: 'SpaceGrotesk', letterSpacing: 1.5, fontSize: 16),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.more_vert),
@@ -30,9 +63,9 @@ class PlayerView extends StatelessWidget {
       ),
       body: Consumer<AudioProvider>(
         builder: (context, audioProvider, child) {
-          final track = audioProvider.currentTrack;
-          if (track == null) {
-            return const Center(child: Text('No track selected'));
+          final song = audioProvider.currentTrack;
+          if (song == null) {
+            return const Center(child: Text('No song selected'));
           }
 
           return SafeArea(
@@ -41,7 +74,7 @@ class PlayerView extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Album Art Cover Container with shadows
+                  // Album Art Cover Container with glowing background shadows
                   Expanded(
                     child: Center(
                       child: Container(
@@ -55,15 +88,19 @@ class PlayerView extends StatelessWidget {
                               spreadRadius: 2,
                               offset: const Offset(0, 10),
                             ),
+                            BoxShadow(
+                              color: const Color(AppConstants.secondaryColorHex).withOpacity(0.2),
+                              blurRadius: 40,
+                              spreadRadius: 2,
+                              offset: const Offset(0, 10),
+                            ),
                           ],
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(24),
-                          child: Image.network(
-                            track.coverUrl,
-                            fit: BoxFit.cover,
-                            height: MediaQuery.of(context).size.width * 0.8,
-                            width: MediaQuery.of(context).size.width * 0.8,
+                          child: _buildCoverImage(
+                            song.coverUrl,
+                            MediaQuery.of(context).size.width * 0.8,
                           ),
                         ),
                       ),
@@ -82,17 +119,18 @@ class PlayerView extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  track.title,
+                                  song.title,
                                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                     fontSize: 24,
                                     fontFamily: 'SpaceGrotesk',
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  track.artist,
+                                  song.artist,
                                   style: const TextStyle(
                                     color: Colors.grey,
                                     fontSize: 16,
@@ -116,18 +154,18 @@ class PlayerView extends StatelessWidget {
                         children: [
                           SliderTheme(
                             data: SliderThemeData(
-                              activeTrackColor: const Color(AppConstants.primaryColorHex),
+                              activeTrackColor: const Color(AppConstants.secondaryColorHex),
                               inactiveTrackColor: Colors.white.withOpacity(0.1),
                               thumbColor: Colors.white,
                               trackHeight: 4.0,
                               thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6.0),
-                              overlayColor: const Color(AppConstants.primaryColorHex).withOpacity(0.15),
+                              overlayColor: const Color(AppConstants.secondaryColorHex).withOpacity(0.15),
                               overlayShape: const RoundSliderOverlayShape(overlayRadius: 14.0),
                             ),
                             child: Slider(
                               value: audioProvider.currentPosition.toDouble(),
                               min: 0,
-                              max: track.duration.toDouble(),
+                              max: song.durationInSeconds.toDouble(),
                               onChanged: (value) {
                                 audioProvider.seek(value.toInt());
                               },
@@ -143,7 +181,7 @@ class PlayerView extends StatelessWidget {
                                   style: const TextStyle(color: Colors.grey, fontSize: 12),
                                 ),
                                 Text(
-                                  _formatDuration(track.duration),
+                                  _formatDuration(song.durationInSeconds),
                                   style: const TextStyle(color: Colors.grey, fontSize: 12),
                                 ),
                               ],
@@ -186,7 +224,7 @@ class PlayerView extends StatelessWidget {
                                 gradient: LinearGradient(
                                   colors: [
                                     const Color(AppConstants.primaryColorHex),
-                                    const Color(AppConstants.primaryColorHex).withOpacity(0.8),
+                                    const Color(AppConstants.secondaryColorHex),
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
