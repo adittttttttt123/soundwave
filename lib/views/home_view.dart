@@ -15,6 +15,7 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin {
   late AnimationController _waveformController;
+  int _currentTab = 0;
 
   @override
   void initState() {
@@ -48,14 +49,30 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
             if (isWide) {
               return Row(
                 children: [
-                  // Responsive Frosted Glass Navigation Sidebar (Glassmorphism)
-                  const NavigationSidebar(),
+                  // Responsive Frosted Glass Navigation Sidebar (IndexedStack Wired)
+                  NavigationSidebar(
+                    activeTab: _currentTab,
+                    onTabSelected: (index) {
+                      setState(() {
+                        _currentTab = index;
+                      });
+                    },
+                  ),
                   
-                  // Main Content Area
+                  // Main Content Area wrapped in IndexedStack to preserve playback state
                   Expanded(
                     child: Stack(
                       children: [
-                        _buildMainContent(context),
+                        IndexedStack(
+                          index: _currentTab,
+                          children: [
+                            _buildSongListTab(context),
+                            _buildBrowseTab(context),
+                            _buildPlaylistsTab(context),
+                            _buildFavoritesTab(context),
+                            _buildSettingsTab(context),
+                          ],
+                        ),
                         _buildBottomPlayer(context),
                       ],
                     ),
@@ -65,7 +82,16 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
             } else {
               return Stack(
                 children: [
-                  _buildMainContent(context),
+                  IndexedStack(
+                    index: _currentTab,
+                    children: [
+                      _buildSongListTab(context),
+                      _buildBrowseTab(context),
+                      _buildPlaylistsTab(context),
+                      _buildFavoritesTab(context),
+                      _buildSettingsTab(context),
+                    ],
+                  ),
                   _buildBottomPlayer(context),
                 ],
               );
@@ -73,10 +99,12 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
           },
         ),
       ),
+      // Mobile Drawer or Bottom Navigation could be mapped here if needed.
     );
   }
 
-  Widget _buildMainContent(BuildContext context) {
+  // TAB 1: Song List (Main Dashboard)
+  Widget _buildSongListTab(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 96.0),
       child: CustomScrollView(
@@ -239,6 +267,188 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
     );
   }
 
+  // TAB 2: Browse Tab (Vibrant Music Genres Grid)
+  Widget _buildBrowseTab(BuildContext context) {
+    final List<Map<String, dynamic>> genres = [
+      {'name': 'Synthwave', 'color1': 0xFF8B5CF6, 'color2': 0xFFEC4899, 'icon': Icons.flash_on_rounded},
+      {'name': 'Cyberpunk', 'color1': 0xFF06B6D4, 'color2': 0xFF3B82F6, 'icon': Icons.bolt_rounded},
+      {'name': 'Ambient', 'color1': 0xFF10B981, 'color2': 0xFF059669, 'icon': Icons.waves_rounded},
+      {'name': 'Chillhop', 'color1': 0xFFF59E0B, 'color2': 0xFFD97706, 'icon': Icons.spa_rounded},
+      {'name': 'Retro Future', 'color1': 0xFFEF4444, 'color2': 0xFFC084FC, 'icon': Icons.wb_sunny_rounded},
+      {'name': 'Electro', 'color1': 0xFF6366F1, 'color2': 0xFF4F46E5, 'icon': Icons.speaker_group_rounded},
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 96.0, top: 40.0, left: 24.0, right: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Browse Genres',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'SpaceGrotesk',
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Explore audio vibes tailored for your current layout.',
+            style: TextStyle(color: Colors.grey),
+          ),
+          const SizedBox(height: 24),
+          Expanded(
+            child: GridView.builder(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 1.5,
+              ),
+              itemCount: genres.length,
+              itemBuilder: (context, index) {
+                final genre = genres[index];
+                return Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      colors: [Color(genre['color1'] as int), Color(genre['color2'] as int)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(genre['color1'] as int).withOpacity(0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      )
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          right: -10,
+                          bottom: -10,
+                          child: Icon(
+                            genre['icon'] as IconData,
+                            size: 80,
+                            color: Colors.white.withOpacity(0.15),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Icon(genre['icon'] as IconData, color: Colors.white, size: 28),
+                              Text(
+                                genre['name'] as String,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // TAB 3: Playlists View Placeholder
+  Widget _buildPlaylistsTab(BuildContext context) {
+    return _buildEmptyStateTab(Icons.queue_music_rounded, 'Playlists Empty', 'Create playlists to view synced tracks here.');
+  }
+
+  // TAB 4: Favorites View Placeholder
+  Widget _buildFavoritesTab(BuildContext context) {
+    return _buildEmptyStateTab(Icons.favorite_rounded, 'Favorites', 'Tracks you mark as favorites will be listed here.');
+  }
+
+  // TAB 5: Settings Tab Layout
+  Widget _buildSettingsTab(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 96.0, top: 40.0, left: 24.0, right: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Settings',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'SpaceGrotesk',
+            ),
+          ),
+          const SizedBox(height: 24),
+          Card(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.high_quality_rounded, color: Color(AppConstants.secondaryColorHex)),
+                  title: const Text('Streaming Audio Quality'),
+                  subtitle: const Text('High Fidelity (320kbps)'),
+                  trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+                  onTap: () {},
+                ),
+                const Divider(height: 1),
+                SwitchListTile(
+                  secondary: const Icon(Icons.animation_rounded, color: Color(AppConstants.primaryColorHex)),
+                  title: const Text('Equalizer Animations'),
+                  subtitle: const Text('Draw dynamic wave painters on players'),
+                  value: true,
+                  activeColor: const Color(AppConstants.secondaryColorHex),
+                  onChanged: (val) {},
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.storage_rounded, color: Colors.grey),
+                  title: const Text('Clear Audio Cache'),
+                  subtitle: const Text('Local temporary files'),
+                  onTap: () {},
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyStateTab(IconData icon, String title, String subtitle) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 40.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 64, color: Colors.white12),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'SpaceGrotesk'),
+            ),
+            const SizedBox(height: 8),
+            Text(subtitle, style: const TextStyle(color: Colors.grey), textAlign: Center),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildBottomPlayer(BuildContext context) {
     return Positioned(
       bottom: 16,
@@ -358,9 +568,16 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
   }
 }
 
-// Responsive Frosted Glass Navigation Sidebar (Glassmorphism & Neon Glow Icons)
+// Responsive Frosted Glass Navigation Sidebar (Glassmorphism & IndexedStack Selection)
 class NavigationSidebar extends StatelessWidget {
-  const NavigationSidebar({super.key});
+  final int activeTab;
+  final ValueChanged<int> onTabSelected;
+
+  const NavigationSidebar({
+    super.key,
+    required this.activeTab,
+    required this.onTabSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -408,24 +625,24 @@ class NavigationSidebar extends StatelessWidget {
             ),
             const SizedBox(height: 48),
 
-            // Navigation Items with Soft Neon Glow Icons
-            _buildNavItem(Icons.home_rounded, 'Home', true),
-            _buildNavItem(Icons.explore_rounded, 'Browse', false),
-            _buildNavItem(Icons.playlist_play_rounded, 'Playlists', false),
-            _buildNavItem(Icons.favorite_rounded, 'Favorites', false),
+            // Navigation Items mapped to IndexedStack indexes
+            _buildNavItem(Icons.home_rounded, 'Home', activeTab == 0, () => onTabSelected(0)),
+            _buildNavItem(Icons.explore_rounded, 'Browse', activeTab == 1, () => onTabSelected(1)),
+            _buildNavItem(Icons.playlist_play_rounded, 'Playlists', activeTab == 2, () => onTabSelected(2)),
+            _buildNavItem(Icons.favorite_rounded, 'Favorites', activeTab == 3, () => onTabSelected(3)),
             const Spacer(),
-            _buildNavItem(Icons.settings_rounded, 'Settings', false),
+            _buildNavItem(Icons.settings_rounded, 'Settings', activeTab == 4, () => onTabSelected(4)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(IconData icon, String title, bool isActive) {
+  Widget _buildNavItem(IconData icon, String title, bool isActive, VoidCallback onTap) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       child: InkWell(
-        onTap: () {},
+        onTap: onTap,
         borderRadius: BorderRadius.circular(10),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
